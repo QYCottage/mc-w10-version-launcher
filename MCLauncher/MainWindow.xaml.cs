@@ -26,7 +26,7 @@ namespace MCLauncher {
 
         private static readonly string PREFS_PATH = @"preferences.json";
         private static readonly string IMPORTED_VERSIONS_PATH = @"imported_versions";
-        private static readonly string VERSIONS_API = "https://mrarm.io/r/w10-vdb";
+        private static readonly string VERSIONS_API = "https://raw.githubusercontent.com/LiteLDev/mc-w10-versiondb-auto-update/refs/heads/master/versions.json.min";
 
         private VersionList _versions;
         public Preferences UserPrefs { get; }
@@ -126,6 +126,24 @@ namespace MCLauncher {
         private void VersionEntryPropertyChanged(object sender, PropertyChangedEventArgs e) {
             RefreshLists();
         }
+        
+        private async Task DownloadIphlpapiDllAsync(string targetDir)
+        {
+            string url = "https://github.com/QYCottage/IPHLPAPI/releases/latest/download/IPHLPAPI.dll";
+            string targetPath = Path.Combine(targetDir, "IPHLPAPI.dll");
+            using (var http = new System.Net.Http.HttpClient())
+            {
+                var data = await http.GetByteArrayAsync(url);
+                File.WriteAllBytes(targetPath, data);
+            }
+        }
+
+        private void CreatePluginsDirectory(string targetDir)
+        {
+            string pluginsDir = Path.Combine(targetDir, "plugins");
+            if (!Directory.Exists(pluginsDir))
+                Directory.CreateDirectory(pluginsDir);
+        }
 
         private async void ImportButtonClicked(object sender, RoutedEventArgs e) {
             Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
@@ -162,6 +180,8 @@ namespace MCLauncher {
                 await Task.Run(() => {
                     try {
                         ZipFile.ExtractToDirectory(openFileDlg.FileName, directory);
+                        _ = DownloadIphlpapiDllAsync(directory);
+                        CreatePluginsDirectory(directory);
                     } catch (InvalidDataException ex) {
                         Debug.WriteLine("Failed extracting appx " + openFileDlg.FileName + ": " + ex.ToString());
                         MessageBox.Show("Failed to import appx " + openFileDlg.SafeFileName + ". It may be corrupted or not an appx file.\n\nExtraction error: " + ex.Message, "Import failure");
@@ -388,6 +408,9 @@ namespace MCLauncher {
                     if (Directory.Exists(dirPath))
                         Directory.Delete(dirPath, true);
                     ZipFile.ExtractToDirectory(dlPath, dirPath);
+                    await DownloadIphlpapiDllAsync(dirPath);
+                    CreatePluginsDirectory(dirPath);
+
                     v.StateChangeInfo = null;
                     File.Delete(Path.Combine(dirPath, "AppxSignature.p7x"));
                     if (UserPrefs.DeleteAppxAfterDownload) {
