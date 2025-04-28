@@ -100,6 +100,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ManifestHelper.cs" />
     <Compile Include="Preferences.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="VersionDownloader.cs" />

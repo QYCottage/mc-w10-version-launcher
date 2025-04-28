@@ -140,7 +140,7 @@ namespace MCLauncher {
 
         private void CreatePluginsDirectory(string targetDir)
         {
-            string pluginsDir = Path.Combine(targetDir, "plugins");
+            string pluginsDir = Path.Combine(targetDir, "mods");
             if (!Directory.Exists(pluginsDir))
                 Directory.CreateDirectory(pluginsDir);
         }
@@ -339,6 +339,7 @@ namespace MCLauncher {
                 await RemovePackage(pkg, packageFamily);
             }
             Debug.WriteLine("Registering package");
+            ManifestHelper.ModifyManifest(gameDir);
             string manifestPath = Path.Combine(gameDir, "AppxManifest.xml");
             await DeploymentProgressWrapper(new PackageManager().RegisterPackageAsync(new Uri(manifestPath), null, DeploymentOptions.DevelopmentMode));
             Debug.WriteLine("App re-register done!");
