@@ -24,14 +24,8 @@ jobs:
         run: |
           msbuild MCLauncher.sln /p:Configuration=Release
 
-      - name: Archive build output
-        if: success()
-        run: |
-          mkdir output
-          copy /Y YourProject\bin\Release\*.* output\
-
-      - name: Upload build-artifact
+      - name: Upload build
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: output
+          name: MCLauncher-Release
+          path: Release/
