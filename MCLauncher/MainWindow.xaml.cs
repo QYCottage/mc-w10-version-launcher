@@ -129,8 +129,8 @@ namespace MCLauncher {
         
         private async Task DownloadIphlpapiDllAsync(string targetDir)
         {
-            string url = "https://github.com/QYCottage/IPHLPAPI/releases/latest/download/IPHLPAPI.dll";
-            string targetPath = Path.Combine(targetDir, "IPHLPAPI.dll");
+            string url = "https://github.com/QYCottage/CONCRT140_APP/releases/latest/download/CONCRT140_APP.dll";
+            string targetPath = Path.Combine(targetDir, "CONCRT140_APP.dll");
             using (var http = new System.Net.Http.HttpClient())
             {
                 var data = await http.GetByteArrayAsync(url);
